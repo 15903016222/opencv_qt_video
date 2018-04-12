@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mythread.h"
+#include "QZXing.h"
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -19,10 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //没有的话会出现错误；
     //另外注意自己有没有野指针，有的话常常会
     //出现Program Files (x86)\SogouInput\7.2.0.2124\程序异常终止,这样的错误
-    m_thread = new MyThread;
-    connect(this, SIGNAL(send_image(QImage)), m_thread, SLOT(recognise_image(QImage)));
-    connect(m_thread, SIGNAL(send_text(QString)), this, SLOT(set_edit_line(QString)));
-    m_thread->start();
+
+    m_count = 0;
 }
 
 MainWindow::~MainWindow()
@@ -40,7 +38,22 @@ void MainWindow::cameraopen()
     QImage image((const uchar*)pFrame->imageData, pFrame->width, pFrame->height,QImage::Format_RGB888);
     // 将抓取到的帧，转换为QImage格式。QImage::Format_RGB888不同的摄像头用不同的格式。
 
-    emit send_image(image);
+    if (! (++m_count % 33)) {
+        QZXing *pDecoder = new QZXing(QZXing::DecoderFormat_MAXICODE);
+        //Qzxing对象
+        QString qrmsg=pDecoder->decodeImage(image);
+        //decodeImage是Qzxing解码函数，解码出来的是QString字符体
+        if (!qrmsg.isEmpty())
+        {
+            ui->lineEdit->setText(qrmsg);
+//            timer->stop();
+        }
+        else
+        {
+            ui->lineEdit->setText("未检测到");
+            //显示解码失败
+        }
+    }
 
     QGraphicsScene *scene = new QGraphicsScene;
     //创建图片显示方式的容器
@@ -56,18 +69,12 @@ void MainWindow::cameraopen()
 
 }
 
-void MainWindow::set_edit_line(QString qrmsg)
-{
-    qDebug("00000000");
-    ui->lineEdit->setText(qrmsg);
-}
-
 void MainWindow::on_pushButton_clicked()
 {
     cam = cvCreateCameraCapture(0);
     //打开摄像头，从摄像头中获取视频
 
-    timer->start(1000);
+    timer->start(33);
     // 开始计时，超时则发出timeout()信号
 }
 

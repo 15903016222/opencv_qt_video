@@ -27,11 +27,6 @@ private slots:
     void cameraopen();
     //声明函数
 
-    void set_edit_line (QString);
-
-signals:
-    void send_image (QImage);
-
 private:
     Ui::MainWindow *ui;
 
@@ -44,7 +39,8 @@ private:
     CvCapture *cam;
     // 视频获取结构， 用来作为视频获取函数的一个参数
 
-    MyThread *m_thread;
+    int m_count;
+
 };
 
 #endif // MAINWINDOW_H
