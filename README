@@ -1,1 +1,3 @@
 # 用opencv识别二维码
+
+使用opencv获取视频图像，然后使用QZXing解析二维码
