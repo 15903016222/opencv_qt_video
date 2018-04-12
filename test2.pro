@@ -13,12 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    mythread.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    mythread.h
 
 FORMS    += mainwindow.ui
 
+include (/home/ws/tmp/opencv/c++/qzxing/src/QZXing.pri)
 
 INCLUDEPATH += /usr/local/include \
                 /usr/local/include/opencv \
